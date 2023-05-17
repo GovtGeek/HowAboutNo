@@ -1,4 +1,4 @@
-local _debug = true
+local _debug = false
 wintergraspInstanceID = 2118
 local WintergraspQuestIDs = {
 	["13539"] = true,

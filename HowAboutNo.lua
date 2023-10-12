@@ -1,6 +1,8 @@
-local _debug = false
-wintergraspInstanceID = 2118
-local WintergraspQuestIDs = {
+local addonName, HowAboutNo = ...
+
+-- New and improved? Trying not to pollute the global scope.
+HowAboutNo._debug = false
+HowAboutNo.WintergraspQuestIDs = {
 	["13539"] = true,
 	["13181"] = true,
 	["13538"] = true,
@@ -31,32 +33,39 @@ local WintergraspQuestIDs = {
 	["13201"] = true
 }
 
-local BannedQuests = {
-	["3861"] = true
+HowAboutNo.BannedQuests = {
+	--["3861"] = true,
+	--["4866"] = true
 }
 
-if _debug then
+if HowAboutNo._debug then
 	BannedQuests["13107"] = true
 	BannedQuests["13671"] = true
 end
 
 local f = CreateFrame("Frame", "HowAboutNoFrame")
 f:RegisterEvent("QUEST_DETAIL")
-f:SetScript("OnEvent", function(this, event, ...)
+f:SetScript("OnEvent", function(this, event, questStartItemID, ...)
 	if event == "QUEST_DETAIL" then
+		local wintergraspInstanceID = 2118
 		local sharedQuestID = GetQuestID()
 		if sharedQuestID ~= nil then -- make sure we got a valid questID
+			local questTitle = QuestUtils_GetQuestName(sharedQuestID)
 			-- Check that we're in Wintergrasp
 			if wintergraspInstanceID == select(8, GetInstanceInfo()) then
-				-- If the quest isn't a Wintergrasp quest, decline it
-				for quest, ban in pairs(WintergraspQuestIDs) do
+				local declineQuest = true
+				-- If the quest is a Wintergrasp quest, allow it
+				for quest, noban in pairs(HowAboutNo.WintergraspQuestIDs) do
 					if sharedQuestID == tonumber(quest) then
-						DeclineQuest()
-						break
+						declineQuest = false
 					end
 				end
+				if declineQuest then
+					DeclineQuest()
+				end
 			end
-			for quest, ban in pairs(BannedQuests) do
+			-- Check banned quests
+			for quest, ban in pairs(HowAboutNo.BannedQuests) do
 				if sharedQuestID == tonumber(quest) then
 					DeclineQuest()
 					break

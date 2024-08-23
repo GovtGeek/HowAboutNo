@@ -1,6 +1,5 @@
-local addonName, HowAboutNo = ...
+local _, HowAboutNo = ...
 
--- New and improved? Trying not to pollute the global scope.
 HowAboutNo._debug = false
 HowAboutNo.WintergraspQuestIDs = {
 	[13539] = true,
@@ -54,37 +53,12 @@ end
 
 function IsBannedQuest(questID, zoneID)
 	if not tonumber(questID) then return false end -- We have to have at least a questID
-
-	if HowAboutNo._debug then print("Checking if "..questID.." is banned") end
-	if HowAboutNo.BannedQuests[questID] then
-		if HowAboutNo._debug then print(questID.." is banned") end
-		return true
-	end
+	if HowAboutNo.BannedQuests[questID] then return true end
 
 	-- Check to see if we're in an instance with whitelisted quests
 	if zoneID ~= nil and HowAboutNo.Zones[zoneID] ~= nil then
-		if HowAboutNo.Zones[zoneID][questID] == true then
-			if HowAboutNo._debug then print("Accepting ", questID) end
-			return false
-		else
-			if HowAboutNo._debug then print("Declining ", questID) end
-			return true
-		end
+		return not HowAboutNo.Zones[zoneID][questID] == true
 	end
-	--[[
-	-- Check if we're in a specific zone and it has an allow list
-	if zoneID and HowAboutNo.Zones[zoneID] then
-		-- If the quest is allowed in this zone, don't decline it
-		if HowAboutNo._debug then print("Checking "..zoneID.." for "..questID) end
-		for quest, accept in pairs(HowAboutNo.Zones[zoneID]) do
-			if questID == tonumber(quest) and accept then
-				if HowAboutNo._debug then print(questID.." is allowed") end
-				return false
-			end
-		end
-		return true
-	end
-	]]--
 	return false
 end
 
@@ -92,9 +66,9 @@ local f = CreateFrame("Frame", "HowAboutNoFrame")
 f:RegisterEvent("QUEST_DETAIL")
 f:SetScript("OnEvent", function(this, event, questStartItemID, ...)
 	if event == "QUEST_DETAIL" then
+		--print(QuestFrameNpcNameText:GetText()) -- NPC/PC sharing the quest
 		local currentZone = select(8, GetInstanceInfo())
 		if IsBannedQuest(GetQuestID(), currentZone) then
-			if HowAboutNo._debug then print("Declined "..GetQuestID()) end
 			DeclineQuest()
 			return
 		end

@@ -1,4 +1,4 @@
-## Interface: 40401, 40400
+## Interface: 40401
 ## Title: HowAboutNo
 ## Author: GovtGeek
 ## Version: 4.4.1.0

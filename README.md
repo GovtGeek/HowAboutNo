@@ -1,2 +1,2 @@
 # HowAboutNo
-World of Warcraft addon that blocks all non-Wintergrasp quests from being accepted while in Wintergrasp
+World of Warcraft addon that automatically declines quests while in a battleground except quests that can be completed in that battleground.
